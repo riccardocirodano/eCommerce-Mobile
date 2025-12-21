@@ -63,3 +63,26 @@ ios/Flipper
 
 # Local Netlify folder
 .netlify
+
+# Custom batch/shell scripts (local development helpers)
+*.bat
+*.sh
+start-expo.bat
+
+# Expo CLI cache and generated files
+.expo-shared/
+*.expo.json
+
+# Metro bundler cache
+.metro
+
+# Temporary expo files
+__generated__/
+
+# Package manager lockfiles (optional - choose one approach)
+# Uncomment the next line if you prefer to ignore lockfiles
+# package-lock.json
+# yarn.lock
+
+# TypeScript build info
+*.tsbuildinfo

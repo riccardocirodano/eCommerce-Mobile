@@ -1,4 +1,5 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoginRequest, RegisterRequest, AuthenticationResponse } from '../types/auth.types';
 import { ENDPOINTS } from '../config/api.config';
 
@@ -9,22 +10,25 @@ const USER_KEY = 'auth_user';
 const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
-  timeout: 10000,
+  timeout: 15000,
+  validateStatus: (status) => status < 500, // Accept all responses except server errors
 });
 
 // Add auth token to all requests
 apiClient.interceptors.request.use(
   (config) => {
-    try {
-      const token = localStorage.getItem(TOKEN_KEY);
-      if (token) {
-        config.headers = config.headers || {};
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    } catch (error) {
-      console.error('Error getting token from storage:', error);
-    }
+    AsyncStorage.getItem(TOKEN_KEY)
+      .then(token => {
+        if (token) {
+          config.headers = config.headers || {};
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      })
+      .catch(error => {
+        console.error('Error getting token from storage:', error);
+      });
     return config;
   },
   (error: any) => Promise.reject(error)
@@ -36,23 +40,38 @@ export const authService = {
       console.log('Login attempt:', request);
       console.log('API URL:', ENDPOINTS.LOGIN);
       
+      // Ensure request body is properly serialized
+      const requestData = JSON.stringify(request);
+      console.log('Request data:', requestData);
+      
       const response = await apiClient.post<AuthenticationResponse>(
         ENDPOINTS.LOGIN,
-        request
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': requestData.length.toString(),
+          }
+        }
       );
       
+      console.log('Login response status:', response.status);
       console.log('Login response:', response.data);
       
       if (response.data.success) {
-        localStorage.setItem(TOKEN_KEY, response.data.token);
-        localStorage.setItem(USER_KEY, JSON.stringify(response.data));
+        await AsyncStorage.setItem(TOKEN_KEY, response.data.token);
+        await AsyncStorage.setItem(USER_KEY, JSON.stringify(response.data));
       }
       
       return response.data;
     } catch (error) {
       console.error('Login service error:', error);
       if (error && typeof error === 'object' && 'response' in error) {
+        console.error('Error status:', (error as any).response?.status);
         console.error('Error details:', (error as any).response?.data);
+      }
+      if (error && typeof error === 'object' && 'message' in error) {
+        console.error('Error message:', (error as any).message);
       }
       throw error;
     }
@@ -60,14 +79,30 @@ export const authService = {
 
   async register(request: RegisterRequest): Promise<AuthenticationResponse> {
     try {
+      console.log('Register attempt:', request);
+      console.log('API URL:', ENDPOINTS.REGISTER);
+      
+      // Ensure request body is properly serialized
+      const requestData = JSON.stringify(request);
+      console.log('Request data:', requestData);
+      
       const response = await apiClient.post<AuthenticationResponse>(
         ENDPOINTS.REGISTER,
-        request
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': requestData.length.toString(),
+          }
+        }
       );
       
+      console.log('Register response status:', response.status);
+      console.log('Register response:', response.data);
+      
       if (response.data.success) {
-        localStorage.setItem(TOKEN_KEY, response.data.token);
-        localStorage.setItem(USER_KEY, JSON.stringify(response.data));
+        await AsyncStorage.setItem(TOKEN_KEY, response.data.token);
+        await AsyncStorage.setItem(USER_KEY, JSON.stringify(response.data));
       }
       
       return response.data;
@@ -79,8 +114,8 @@ export const authService = {
 
   async logout(): Promise<void> {
     try {
-      localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem(USER_KEY);
+      await AsyncStorage.removeItem(TOKEN_KEY);
+      await AsyncStorage.removeItem(USER_KEY);
     } catch (error) {
       console.error('Logout service error:', error);
       throw error;
@@ -89,7 +124,7 @@ export const authService = {
 
   async getCurrentUser(): Promise<AuthenticationResponse | null> {
     try {
-      const userData = localStorage.getItem(USER_KEY);
+      const userData = await AsyncStorage.getItem(USER_KEY);
       if (userData) {
         return JSON.parse(userData) as AuthenticationResponse;
       }
@@ -102,7 +137,7 @@ export const authService = {
 
   async getToken(): Promise<string | null> {
     try {
-      return localStorage.getItem(TOKEN_KEY);
+      return await AsyncStorage.getItem(TOKEN_KEY);
     } catch (error) {
       console.error('Get token error:', error);
       return null;
