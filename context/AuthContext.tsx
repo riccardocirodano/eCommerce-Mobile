@@ -9,6 +9,12 @@ interface AuthContextType {
   register: (request: RegisterRequest) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
+  getUserRoles: () => string[];
+  hasRole: (role: string) => boolean;
+  isAdmin: () => boolean;
+  isManager: () => boolean;
+  isUser: () => boolean;
+  getDashboardScreen: () => string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -56,6 +62,47 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
   };
 
+  const getUserRoles = (): string[] => {
+    if (!user?.token) return [];
+    try {
+      // Decode JWT token to extract roles
+      const tokenParts = user.token.split('.');
+      if (tokenParts.length !== 3) return [];
+      
+      const payload = JSON.parse(atob(tokenParts[1]));
+      return payload.role ? [payload.role] : payload.roles || [];
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return [];
+    }
+  };
+
+  const hasRole = (role: string): boolean => {
+    return getUserRoles().includes(role);
+  };
+
+  const isAdmin = (): boolean => {
+    return hasRole('Admin');
+  };
+
+  const isManager = (): boolean => {
+    return hasRole('Manager');
+  };
+
+  const isUser = (): boolean => {
+    return hasRole('User');
+  };
+
+  const getDashboardScreen = (): string => {
+    if (isAdmin()) {
+      return 'AdminDashboard';
+    } else if (isManager()) {
+      return 'ManagerDashboard';
+    } else {
+      return 'UserDashboard';
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -65,6 +112,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         register,
         logout,
         isAuthenticated: !!user,
+        getUserRoles,
+        hasRole,
+        isAdmin,
+        isManager,
+        isUser,
+        getDashboardScreen,
       }}
     >
       {children}

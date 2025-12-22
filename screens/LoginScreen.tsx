@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,15 @@ export default function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, isAuthenticated, getDashboardScreen } = useAuth();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      const dashboardScreen = getDashboardScreen();
+      navigation.replace(dashboardScreen);
+    }
+  }, [isAuthenticated, navigation, getDashboardScreen]);
 
   const handleLogin = async () => {
     console.log('HandleLogin called');
@@ -32,7 +40,9 @@ export default function LoginScreen({ navigation }: any) {
       const request: LoginRequest = { email, password };
       await login(request);
       console.log('Login successful');
-      // Navigation happens automatically via AuthContext
+      // Navigate to role-specific dashboard
+      const dashboardScreen = getDashboardScreen();
+      navigation.replace(dashboardScreen);
     } catch (error: any) {
       console.error('Login error caught in component:', error);
       Alert.alert('Login Failed', error.response?.data?.message || 'Invalid email or password');

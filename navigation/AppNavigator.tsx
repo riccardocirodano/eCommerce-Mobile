@@ -4,12 +4,15 @@ import { useAuth } from '../context/AuthContext';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import DashboardScreen from '../screens/DashboardScreen';
+import AdminDashboardScreen from '../screens/AdminDashboardScreen';
+import UserDashboardScreen from '../screens/UserDashboardScreen';
+import ManagerDashboardScreen from '../screens/ManagerDashboardScreen';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, getDashboardScreen } = useAuth();
 
   if (isLoading) {
     return (
@@ -32,13 +35,36 @@ export default function AppNavigator() {
       }}
     >
       {isAuthenticated ? (
-        <Stack.Screen 
-          name="Dashboard" 
-          component={DashboardScreen}
-          options={{
-            headerRight: () => null, // You can add logout button here
-          }}
-        />
+        <>
+          <Stack.Screen 
+            name="Dashboard" 
+            component={DashboardScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen 
+            name="AdminDashboard" 
+            component={AdminDashboardScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen 
+            name="UserDashboard" 
+            component={UserDashboardScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen 
+            name="ManagerDashboard" 
+            component={ManagerDashboardScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+        </>
       ) : (
         <>
           <Stack.Screen 

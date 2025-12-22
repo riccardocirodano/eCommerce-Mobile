@@ -13,13 +13,14 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useAuth } from '../context/AuthContext';
-import { RegisterRequest, Gender } from '../types/auth.types';
+import { RegisterRequest, Gender, UserRole } from '../types/auth.types';
 
 export default function RegisterScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [personName, setPersonName] = useState('');
   const [gender, setGender] = useState<Gender>(Gender.Male);
+  const [roleName, setRoleName] = useState<UserRole>(UserRole.User);
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
 
@@ -41,6 +42,7 @@ export default function RegisterScreen({ navigation }: any) {
         password,
         personName,
         gender,
+        roleName,
       };
       await register(request);
       Alert.alert('Success', 'Registration successful! Please login.', [
@@ -105,6 +107,20 @@ export default function RegisterScreen({ navigation }: any) {
                 <Picker.Item label="Male" value={Gender.Male} />
                 <Picker.Item label="Female" value={Gender.Female} />
                 <Picker.Item label="Other" value={Gender.Other} />
+              </Picker>
+            </View>
+
+            <View style={styles.pickerContainer}>
+              <Text style={styles.label}>Role</Text>
+              <Picker
+                selectedValue={roleName}
+                onValueChange={(value: React.SetStateAction<UserRole>) => setRoleName(value)}
+                enabled={!isLoading}
+                style={styles.picker}
+              >
+                <Picker.Item label="User" value={UserRole.User} />
+                <Picker.Item label="Manager" value={UserRole.Manager} />
+                <Picker.Item label="Admin" value={UserRole.Admin} />
               </Picker>
             </View>
 
