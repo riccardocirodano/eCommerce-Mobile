@@ -7,12 +7,22 @@ import DashboardScreen from '../screens/DashboardScreen';
 import AdminDashboardScreen from '../screens/AdminDashboardScreen';
 import UserDashboardScreen from '../screens/UserDashboardScreen';
 import ManagerDashboardScreen from '../screens/ManagerDashboardScreen';
+import ManagerTeamManagementScreen from '../screens/ManagerTeamManagementScreen';
+import ManagerReportsScreen from '../screens/ManagerReportsScreen';
+import ManagerTasksScreen from '../screens/ManagerTasksScreen';
+import ManagerInventoryScreen from '../screens/ManagerInventoryScreen';
+import ManagerScheduleScreen from '../screens/ManagerScheduleScreen';
+import ManagerPerformanceScreen from '../screens/ManagerPerformanceScreen';
+import ManagerMyProfileScreen from '../screens/ManagerMyProfileScreen';
+import UserManagementScreen from '../screens/UserManagementScreen';
+import ActivityLogsScreen from '../screens/ActivityLogsScreen';
+import SystemSettingsScreen from '../screens/SystemSettingsScreen';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
-  const { isAuthenticated, isLoading, getDashboardScreen } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -60,6 +70,62 @@ export default function AppNavigator() {
           <Stack.Screen 
             name="ManagerDashboard" 
             component={ManagerDashboardScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="ManagerTeamManagement"
+            component={ManagerTeamManagementScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ManagerReports"
+            component={ManagerReportsScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ManagerTasks"
+            component={ManagerTasksScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ManagerInventory"
+            component={ManagerInventoryScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ManagerSchedule"
+            component={ManagerScheduleScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ManagerPerformance"
+            component={ManagerPerformanceScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ManagerMyProfile"
+            component={ManagerMyProfileScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+            name="UserManagement" 
+            component={UserManagementScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen 
+            name="ActivityLogs" 
+            component={ActivityLogsScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen 
+            name="SystemSettings" 
+            component={SystemSettingsScreen}
             options={{
               headerShown: false,
             }}

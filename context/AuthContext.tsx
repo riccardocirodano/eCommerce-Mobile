@@ -64,13 +64,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const getUserRoles = (): string[] => {
     if (!user?.token) return [];
+
     try {
-      // Decode JWT token to extract roles
       const tokenParts = user.token.split('.');
       if (tokenParts.length !== 3) return [];
-      
-      const payload = JSON.parse(atob(tokenParts[1]));
-      return payload.role ? [payload.role] : payload.roles || [];
+
+      // base64url -> base64
+      let base64 = tokenParts[1].replace(/-/g, '+').replace(/_/g, '/');
+      while (base64.length % 4 !== 0) base64 += '=';
+
+      const payload = JSON.parse(atob(base64));
+
+      const candidates = [
+        payload.role,
+        payload.roles,
+        payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
+        payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role'],
+      ];
+
+      const roles = new Set<string>();
+      for (const value of candidates) {
+        if (Array.isArray(value)) {
+          value.filter((r) => typeof r === 'string' && r.trim()).forEach((r) => roles.add(r));
+        } else if (typeof value === 'string' && value.trim()) {
+          roles.add(value);
+        }
+      }
+
+      return Array.from(roles);
     } catch (error) {
       console.error('Error decoding token:', error);
       return [];

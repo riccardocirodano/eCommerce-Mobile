@@ -20,13 +20,18 @@ export default function RegisterScreen({ navigation }: any) {
   const [password, setPassword] = useState('');
   const [personName, setPersonName] = useState('');
   const [gender, setGender] = useState<Gender>(Gender.Male);
-  const [roleName, setRoleName] = useState<UserRole>(UserRole.User);
+  const [roleName, setRoleName] = useState<UserRole | ''>('');
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
 
   const handleRegister = async () => {
     if (!email || !password || !personName) {
       Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (!roleName) {
+      Alert.alert('Error', 'Please choose a role');
       return;
     }
 
@@ -42,12 +47,10 @@ export default function RegisterScreen({ navigation }: any) {
         password,
         personName,
         gender,
-        roleName,
+        roleName: roleName as UserRole,
       };
       await register(request);
-      Alert.alert('Success', 'Registration successful! Please login.', [
-        { text: 'OK', onPress: () => navigation.navigate('Login') },
-      ]);
+      Alert.alert('Success', 'Registration successful! Redirecting...');
     } catch (error: any) {
       Alert.alert(
         'Registration Failed',
@@ -114,10 +117,11 @@ export default function RegisterScreen({ navigation }: any) {
               <Text style={styles.label}>Role</Text>
               <Picker
                 selectedValue={roleName}
-                onValueChange={(value: React.SetStateAction<UserRole>) => setRoleName(value)}
+                onValueChange={(value: any) => setRoleName(value)}
                 enabled={!isLoading}
                 style={styles.picker}
               >
+                <Picker.Item label="Select role..." value="" enabled={false} />
                 <Picker.Item label="User" value={UserRole.User} />
                 <Picker.Item label="Manager" value={UserRole.Manager} />
                 <Picker.Item label="Admin" value={UserRole.Admin} />

@@ -27,7 +27,6 @@ export default function UserDashboardScreen({ navigation }: any) {
   const handleLogout = async () => {
     try {
       await logout();
-      navigation.replace('Login');
     } catch (error) {
       console.error('Logout failed:', error);
     }

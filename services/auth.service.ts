@@ -17,18 +17,25 @@ const apiClient = axios.create({
 });
 
 // Add auth token to all requests
-apiClient.interceptors.request.use(
-  (config) => {
-    AsyncStorage.getItem(TOKEN_KEY)
-      .then(token => {
-        if (token) {
-          config.headers = config.headers || {};
-          config.headers.Authorization = `Bearer ${token}`;
+(apiClient.interceptors.request as any).use(
+  async (config: any) => {
+    try {
+      const token = await AsyncStorage.getItem(TOKEN_KEY);
+
+      if (token) {
+        config.headers = config.headers || {};
+        const headersAny: any = config.headers;
+
+        if (typeof headersAny.set === 'function') {
+          headersAny.set('Authorization', `Bearer ${token}`);
+        } else {
+          headersAny['Authorization'] = `Bearer ${token}`;
         }
-      })
-      .catch(error => {
-        console.error('Error getting token from storage:', error);
-      });
+      }
+    } catch (error) {
+      console.error('Error getting token from storage:', error);
+    }
+
     return config;
   },
   (error: any) => Promise.reject(error)

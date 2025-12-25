@@ -27,19 +27,19 @@ export default function ManagerDashboardScreen({ navigation }: any) {
   const handleLogout = async () => {
     try {
       await logout();
-      navigation.replace('Login');
     } catch (error) {
       console.error('Logout failed:', error);
     }
   };
 
   const managerFeatures = [
-    { title: 'Team Management', icon: 'people', action: () => console.log('Team'), color: '#ff4081' },
-    { title: 'Reports', icon: 'analytics', action: () => console.log('Reports'), color: '#9c27b0' },
-    { title: 'Tasks', icon: 'clipboard', action: () => console.log('Tasks'), color: '#3f51b5' },
-    { title: 'Inventory', icon: 'cube', action: () => console.log('Inventory'), color: '#009688' },
-    { title: 'Schedule', icon: 'calendar', action: () => console.log('Schedule'), color: '#ff9800' },
-    { title: 'Performance', icon: 'trending-up', action: () => console.log('Performance'), color: '#4caf50' },
+    { title: 'Team Management', icon: 'people', action: () => navigation.navigate('ManagerTeamManagement'), color: '#ff4081' },
+    { title: 'Reports', icon: 'analytics', action: () => navigation.navigate('ManagerReports'), color: '#9c27b0' },
+    { title: 'Tasks', icon: 'clipboard', action: () => navigation.navigate('ManagerTasks'), color: '#3f51b5' },
+    { title: 'Inventory', icon: 'cube', action: () => navigation.navigate('ManagerInventory'), color: '#009688' },
+    { title: 'Schedule', icon: 'calendar', action: () => navigation.navigate('ManagerSchedule'), color: '#ff9800' },
+    { title: 'My Profile', icon: 'person', action: () => navigation.navigate('ManagerMyProfile'), color: '#4facfe' },
+    { title: 'Performance', icon: 'trending-up', action: () => navigation.navigate('ManagerPerformance'), color: '#4caf50' },
   ];
 
   const teamStats = [
