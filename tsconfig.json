@@ -1,5 +1,4 @@
 {
-  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
     "esModuleInterop": true,
@@ -17,7 +16,7 @@
     ],
     "jsx": "react-jsx",
     "module": "esnext",
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0",
     "baseUrl": "./",
     "paths": {
       "@/*": [
@@ -31,5 +30,6 @@
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "extends": "expo/tsconfig.base"
 }
